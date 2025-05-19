@@ -1,18 +1,11 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-// Criação do Contexto de Tema (pode estar em um arquivo separado)
-const ThemeContext = React.createContext({
-  theme: 'light',
-  toggleTheme: () => {},
-});
-
-// Provider do Contexto (em um arquivo separado)
-class ThemeProvider extends React.Component {
+class ContextScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      theme: 'light',
+      theme: 'light', // Estado inicial do tema
     };
   }
 
@@ -23,46 +16,33 @@ class ThemeProvider extends React.Component {
   };
 
   render() {
-    return (
-      <ThemeContext.Provider value={{ theme: this.state.theme, toggleTheme: this.toggleTheme }}>
-        {this.props.children}
-      </ThemeContext.Provider>
-    );
-  }
-}
+    const { theme } = this.state;
 
-class ContextScreen extends React.Component {
-  render() {
-    return (
-      <ThemeContext.Consumer>
-        {({ theme, toggleTheme }) => {
-          const themedStyles = {
-            container: [
-              styles.container,
-              theme === 'dark' ? styles.darkContainer : styles.lightContainer,
-            ],
-            text: [
-              styles.text,
-              theme === 'dark' ? styles.darkText : styles.lightText,
-            ],
-            // Simulação de valor memoizado (não é um 'useMemo' direto)
-            memoizedValue: theme === 'dark' ? 'O tema é escuro' : 'O tema é claro',
-          };
+    const containerStyle =
+      theme === 'light' ? styles.lightContainer : styles.darkContainer;
+    const textStyle =
+      theme === 'light' ? styles.lightText : styles.darkText;
+    const buttonStyle =
+      theme === 'light' ? styles.darkButton : styles.lightButton;
+    const buttonTextStyle =
+      theme === 'light' ? styles.darkButtonText : styles.lightButtonText;
 
-          return (
-            <View style={themedStyles.container}>
-              <Text style={themedStyles.text}>Tela de Contexto</Text>
-              <Text style={themedStyles.text}>Tema atual: {theme}</Text>
-              <Text style={themedStyles.text}>Valor "memoizado": {themedStyles.memoizedValue}</Text>
-              <Button title="Alternar Tema" onPress={toggleTheme} />
-              <Button
-                title="Voltar para Tela Inicial"
-                onPress={() => this.props.navigation.goBack()}
-              />
-            </View>
-          );
-        }}
-      </ThemeContext.Consumer>
+    return (
+      <View style={[styles.container, containerStyle]}>
+        <Text style={[styles.text, textStyle]}>Tela de Contexto</Text>
+        <Text style={[styles.text, textStyle]}>Tema atual: {theme}</Text>
+
+        <TouchableOpacity style={[styles.button, buttonStyle]} onPress={this.toggleTheme}>
+          <Text style={[styles.buttonText, buttonTextStyle]}>Alternar Tema</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, buttonStyle]}
+          onPress={() => this.props.navigation.goBack()}
+        >
+          <Text style={[styles.buttonText, buttonTextStyle]}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 }
@@ -75,21 +55,47 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   lightContainer: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#f0f0f0', 
   },
   darkContainer: {
-    backgroundColor: '#333',
+    backgroundColor: '#333', 
   },
   text: {
     fontSize: 18,
     marginBottom: 10,
   },
   lightText: {
-    color: '#333',
+    color: '#333', 
   },
   darkText: {
-    color: '#f0f0f0',
+    color: '#f0f0f0', 
+  },
+  button: {
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+    borderWidth: 2,
+    marginVertical: 10,
+  },
+  darkButton: {
+    backgroundColor: '#333',
+    borderColor: '#333', 
+  },
+  lightButton: {
+    backgroundColor: '#f0f0f0', 
+    borderColor: '#f0f0f0',
+  },
+  buttonText: {
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  darkButtonText: {
+    color: '#f0f0f0', 
+  },
+  lightButtonText: {
+    color: '#333',
   },
 });
 
-export { ThemeProvider, ContextScreen };
+export default ContextScreen;
